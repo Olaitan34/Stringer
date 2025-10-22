@@ -12,7 +12,9 @@ urlpatterns = [
     
     # GET /strings/ - List all strings with optional filters
     # POST /strings/ - Create a new string analysis
-    path('strings/', views.strings_collection, name='strings_collection'),
+    # Support both with and without trailing slash to avoid redirect issues
+    path('strings/', views.strings_collection, name='strings_collection_slash'),
+    path('strings', views.strings_collection, name='strings_collection'),
     
     # GET /strings/<string_value> - Get string by value
     # DELETE /strings/<string_value> - Delete string by value
