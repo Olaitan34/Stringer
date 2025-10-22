@@ -5,6 +5,7 @@ Implements all 5 API endpoints with proper validation and error handling.
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from urllib.parse import unquote
@@ -32,14 +33,29 @@ def create_string(request):
     
     Responses:
         201 Created: String created successfully
-        400 Bad Request: Invalid request data
+        400 Bad Request: Missing 'value' field or empty value
         409 Conflict: String already exists
-        422 Unprocessable Entity: Invalid value type
+        422 Unprocessable Entity: Invalid value type (not a string)
     """
     # Validate that value exists
     if 'value' not in request.data:
         return Response(
             {"error": "The 'value' field is required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Check if value is a string type (422 Unprocessable Entity)
+    value = request.data.get('value')
+    if not isinstance(value, str):
+        return Response(
+            {"error": "Value must be a string."},
+            status=status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
+    
+    # Check if value is empty (400 Bad Request)
+    if not value or value.strip() == '':
+        return Response(
+            {"error": "Value cannot be empty."},
             status=status.HTTP_400_BAD_REQUEST
         )
     
@@ -49,33 +65,24 @@ def create_string(request):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-    except Exception as e:
-        error_detail = str(e)
-        
-        # Check for conflict (string already exists)
+    except ValidationError as e:
+        # Check for conflict (string already exists) - 409
+        error_detail = str(e.detail)
         if 'conflict' in error_detail.lower() or 'already exists' in error_detail.lower():
             return Response(
                 {"error": "String already exists in the database."},
                 status=status.HTTP_409_CONFLICT
             )
         
-        # Check for invalid type
-        if 'invalid_type' in error_detail.lower() or 'must be a string' in error_detail.lower():
-            return Response(
-                {"error": "Value must be a string."},
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY
-            )
-        
-        # Check for empty value
-        if 'empty' in error_detail.lower():
-            return Response(
-                {"error": "Value cannot be empty."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        # Default bad request
+        # Any other validation error - 400
         return Response(
-            {"error": error_detail},
+            {"error": str(e.detail)},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    except Exception as e:
+        # Unexpected errors - 400
+        return Response(
+            {"error": str(e)},
             status=status.HTTP_400_BAD_REQUEST
         )
 
