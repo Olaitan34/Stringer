@@ -19,23 +19,10 @@ from .serializers import (
 )
 
 
-@api_view(['POST'])
-def create_string(request):
+def _create_string_logic(request):
     """
-    POST /strings
-    
-    Create a new string analysis.
-    
-    Request Body:
-        {
-            "value": "string to analyze"
-        }
-    
-    Responses:
-        201 Created: String created successfully
-        400 Bad Request: Missing 'value' field or empty value
-        409 Conflict: String already exists
-        422 Unprocessable Entity: Invalid value type (not a string)
+    Internal logic for creating a string.
+    Used by both create_string() and strings_collection().
     """
     # Validate that value exists
     if 'value' not in request.data:
@@ -87,6 +74,27 @@ def create_string(request):
         )
 
 
+@api_view(['POST'])
+def create_string(request):
+    """
+    POST /strings
+    
+    Create a new string analysis.
+    
+    Request Body:
+        {
+            "value": "string to analyze"
+        }
+    
+    Responses:
+        201 Created: String created successfully
+        400 Bad Request: Missing 'value' field or empty value
+        409 Conflict: String already exists
+        422 Unprocessable Entity: Invalid value type (not a string)
+    """
+    return _create_string_logic(request)
+
+
 @api_view(['GET', 'DELETE'])
 def string_detail(request, string_value):
     """
@@ -132,28 +140,10 @@ def string_detail(request, string_value):
             )
 
 
-@api_view(['GET'])
-def list_strings(request):
+def _list_strings_logic(request):
     """
-    GET /strings
-    
-    List all strings with optional query parameters for filtering:
-    - is_palindrome: boolean (convert "true"/"false" string to bool)
-    - min_length: integer (filter length >= min_length)
-    - max_length: integer (filter length <= max_length)
-    - word_count: integer (exact match)
-    - contains_character: single character (check if char in value)
-    
-    Returns:
-        {
-            "data": [array of objects],
-            "count": int,
-            "filters_applied": {}
-        }
-    
-    Responses:
-        200 OK: Success
-        400 Bad Request: Invalid query parameters
+    Internal logic for listing strings with filters.
+    Used by both list_strings() and strings_collection().
     """
     queryset = StringAnalysis.objects.all()
     filters_applied = {}
@@ -234,6 +224,32 @@ def list_strings(request):
     }
     
     return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def list_strings(request):
+    """
+    GET /strings
+    
+    List all strings with optional query parameters for filtering:
+    - is_palindrome: boolean (convert "true"/"false" string to bool)
+    - min_length: integer (filter length >= min_length)
+    - max_length: integer (filter length <= max_length)
+    - word_count: integer (exact match)
+    - contains_character: single character (check if char in value)
+    
+    Returns:
+        {
+            "data": [array of objects],
+            "count": int,
+            "filters_applied": {}
+        }
+    
+    Responses:
+        200 OK: Success
+        400 Bad Request: Invalid query parameters
+    """
+    return _list_strings_logic(request)
 
 
 def parse_natural_language_query(query_string):
@@ -377,9 +393,9 @@ def strings_collection(request):
     POST /strings/ - Create a new string analysis
     
     This combined view handles both GET and POST requests to the /strings/ endpoint.
-    Delegates to list_strings() for GET and create_string() for POST.
+    Calls internal logic functions directly to avoid double-wrapping the request.
     """
     if request.method == 'GET':
-        return list_strings(request)
+        return _list_strings_logic(request)
     elif request.method == 'POST':
-        return create_string(request)
+        return _create_string_logic(request)
