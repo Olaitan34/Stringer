@@ -1,0 +1,214 @@
+{
+  "info": {
+    "name": "String Analyzer API",
+    "description": "API collection for String Analyzer Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create String",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"value\": \"hello world\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/strings",
+          "host": ["{{base_url}}"],
+          "path": ["strings"]
+        },
+        "description": "Create a new string analysis. Returns 201 on success, 409 if duplicate, 400 for bad request."
+      }
+    },
+    {
+      "name": "Get String by Value",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/strings/hello world",
+          "host": ["{{base_url}}"],
+          "path": ["strings", "hello world"]
+        },
+        "description": "Retrieve a string analysis by its value. Returns 200 on success, 404 if not found."
+      }
+    },
+    {
+      "name": "List All Strings",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/strings/",
+          "host": ["{{base_url}}"],
+          "path": ["strings", ""]
+        },
+        "description": "List all strings without any filters."
+      }
+    },
+    {
+      "name": "List Palindromes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/strings/?is_palindrome=true",
+          "host": ["{{base_url}}"],
+          "path": ["strings", ""],
+          "query": [
+            {
+              "key": "is_palindrome",
+              "value": "true"
+            }
+          ]
+        },
+        "description": "Filter strings to show only palindromes."
+      }
+    },
+    {
+      "name": "Filter by Length Range",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/strings/?min_length=5&max_length=10",
+          "host": ["{{base_url}}"],
+          "path": ["strings", ""],
+          "query": [
+            {
+              "key": "min_length",
+              "value": "5"
+            },
+            {
+              "key": "max_length",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Filter strings by minimum and maximum length."
+      }
+    },
+    {
+      "name": "Filter by Word Count",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/strings/?word_count=1",
+          "host": ["{{base_url}}"],
+          "path": ["strings", ""],
+          "query": [
+            {
+              "key": "word_count",
+              "value": "1"
+            }
+          ]
+        },
+        "description": "Filter strings with exactly 1 word."
+      }
+    },
+    {
+      "name": "Filter by Character",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/strings/?contains_character=a",
+          "host": ["{{base_url}}"],
+          "path": ["strings", ""],
+          "query": [
+            {
+              "key": "contains_character",
+              "value": "a"
+            }
+          ]
+        },
+        "description": "Filter strings containing the letter 'a'."
+      }
+    },
+    {
+      "name": "Natural Language - Palindrome",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/strings/filter-by-natural-language?query=palindrome",
+          "host": ["{{base_url}}"],
+          "path": ["strings", "filter-by-natural-language"],
+          "query": [
+            {
+              "key": "query",
+              "value": "palindrome"
+            }
+          ]
+        },
+        "description": "Natural language query for palindromes."
+      }
+    },
+    {
+      "name": "Natural Language - Single Word",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/strings/filter-by-natural-language?query=single word",
+          "host": ["{{base_url}}"],
+          "path": ["strings", "filter-by-natural-language"],
+          "query": [
+            {
+              "key": "query",
+              "value": "single word"
+            }
+          ]
+        },
+        "description": "Natural language query for single-word strings."
+      }
+    },
+    {
+      "name": "Natural Language - Complex",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/strings/filter-by-natural-language?query=palindromic single word longer than 3 characters",
+          "host": ["{{base_url}}"],
+          "path": ["strings", "filter-by-natural-language"],
+          "query": [
+            {
+              "key": "query",
+              "value": "palindromic single word longer than 3 characters"
+            }
+          ]
+        },
+        "description": "Complex natural language query with multiple filters."
+      }
+    },
+    {
+      "name": "Delete String",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/strings/hello world",
+          "host": ["{{base_url}}"],
+          "path": ["strings", "hello world"]
+        },
+        "description": "Delete a string by its value. Returns 204 on success, 404 if not found."
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ]
+}

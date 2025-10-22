@@ -1,0 +1,58 @@
+# Logs Directory
+
+This directory stores application logs.
+
+## Log Files
+
+- `django_errors.log` - Django application errors and warnings
+- Created automatically when the application runs with logging enabled
+
+## Viewing Logs
+
+### Local Development
+```bash
+# View recent errors
+tail -50 logs/django_errors.log
+
+# Monitor logs in real-time
+tail -f logs/django_errors.log
+```
+
+### Sevalla Production
+```bash
+# View Passenger/Apache errors
+tail -100 ~/logs/yourdomain.com/http/error.log
+
+# Monitor in real-time
+tail -f ~/logs/yourdomain.com/http/error.log
+```
+
+## Log Rotation
+
+Logs may grow large over time. Consider implementing log rotation:
+
+### Linux/Unix (logrotate)
+Create `/etc/logrotate.d/string_analyzer`:
+```
+/path/to/string_analyzer/logs/*.log {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    missingok
+}
+```
+
+### Manual Cleanup
+```bash
+# Archive old logs
+gzip logs/django_errors.log
+
+# Or delete old logs
+rm logs/django_errors.log
+```
+
+## Note
+
+This directory and `.gitkeep` file ensure the logs directory exists in version control without tracking log files themselves.
