@@ -369,3 +369,17 @@ def filter_by_natural_language(request):
     
     return Response(response_data, status=status.HTTP_200_OK)
 
+
+@api_view(['GET', 'POST'])
+def strings_collection(request):
+    """
+    GET /strings/ - List all strings with optional filters
+    POST /strings/ - Create a new string analysis
+    
+    This combined view handles both GET and POST requests to the /strings/ endpoint.
+    Delegates to list_strings() for GET and create_string() for POST.
+    """
+    if request.method == 'GET':
+        return list_strings(request)
+    elif request.method == 'POST':
+        return create_string(request)
