@@ -4,25 +4,22 @@ Django settings for string_analyzer project.
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv(
+SECRET_KEY = config(
     'SECRET_KEY',
-    'django-insecure-default-key-only-for-development-change-in-production'
+    default='django-insecure-default-key-only-for-development-change-in-production'
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't', 'yes')
+DEBUG = config('DEBUG', default='False').lower() in ('true', '1', 't', 'yes')
 
 # Configure ALLOWED_HOSTS from environment variable
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -79,7 +76,7 @@ WSGI_APPLICATION = 'string_analyzer.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = config('DATABASE_URL', default='')
 
 if DATABASE_URL:
     # PostgreSQL for production
@@ -179,9 +176,9 @@ if DEBUG:
 
 
 # CORS settings
-CORS_ALLOWED_ORIGINS_STR = os.getenv(
+CORS_ALLOWED_ORIGINS_STR = config(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:3000,http://127.0.0.1:3000'
+    default='http://localhost:3000,http://127.0.0.1:3000'
 )
 
 # Split and strip whitespace from each origin
